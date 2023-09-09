@@ -39,9 +39,9 @@ source $HOME/.bash_profile
 }
 [ ! -d ~/go/bin ] && mkdir -p ~/go/bin
 ```
-
-# Download project binaries
 ```
+# Download project binaries
+
 mkdir -p $HOME/.althea/cosmovisor/genesis/bin
 wget -O $HOME/.althea/cosmovisor/genesis/bin/althea https://github.com/althea-net/althea-L1/releases/download/v0.5.5/althea-linux-amd64
 chmod +x $HOME/.althea/cosmovisor/genesis/bin/althea
@@ -85,6 +85,7 @@ althea config chain-id althea_417834-3
 althea config keyring-backend test
 althea config node tcp://localhost:15257
 ```
+### $MONIKER değiştirelim.
 ```
 # Initialize the node
 althea init $MONIKER --chain-id althea_417834-3
@@ -109,15 +110,52 @@ sed -i \
   -e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
   $HOME/.althea/config/app.toml
 ```
+### Port farklı olsun derseniz. PORT:15
 ```
 # Set custom ports
 sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:15258\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:15257\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:15260\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:15256\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":15266\"%" $HOME/.althea/config/config.toml
 sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:15217\"%; s%^address = \":8080\"%address = \":15280\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:15290\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:15291\"%; s%:8545%:15245%; s%:8546%:15246%; s%:6065%:15265%" $HOME/.althea/config/app.toml
 ```
+### Snap Atam hızlı olsun
 ```
 curl -L https://snapshots.kjnodes.com/althea-testnet/snapshot_latest.tar.lz4 | tar -Ilz4 -xf - -C $HOME/.althea
 [[ -f $HOME/.althea/data/upgrade-info.json ]] && cp $HOME/.althea/data/upgrade-info.json $HOME/.althea/cosmovisor/genesis/upgrade-info.json
 ```
+### Hadi başlatalım
 ```
 sudo systemctl start althea && sudo journalctl -u althea -f --no-hostname -o cat
 ```
+
+### Cüzdan Oluşturma
+
+* Yeni Cüzdan
+```
+althea keys add wallet
+```
+* Cüzdan import
+```
+althea keys add wallet --recover
+```
+### Validator kurulumu
+
+NOT: Moniker adınızı ve cüzdan adınızı yazınız.
+```
+althea tx staking create-validator \
+--amount 1000000aalthea \
+--pubkey $(althea tendermint show-validator) \
+--moniker "YOUR_MONIKER_NAME" \
+--identity "YOUR_KEYBASE_ID" \
+--details "YOUR_DETAILS" \
+--website "YOUR_WEBSITE_URL" \
+--chain-id althea_417834-3 \
+--commission-rate 0.05 \
+--commission-max-rate 0.20 \
+--commission-max-change-rate 0.01 \
+--min-self-delegation 1 \
+--from wallet \
+--gas-adjustment 1.4 \
+--gas auto \
+--gas-prices 0aalthea \
+-y
+```
+
