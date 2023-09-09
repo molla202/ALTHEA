@@ -15,10 +15,10 @@
 ## Sistem Gereksinimleri
 | Bileşenler | Minimum Gereksinimler | 
 | ------------ | ------------ |
-| CPU |	4 |
-| RAM	| 8 GB |
-| Storage	| 250 GB SSD |
-
+| ✔️CPU |	4 |
+| ✔️RAM	| 8 GB |
+| ✔️Storage	| 250 GB SSD |
+| ✔️UBUNTU | 22 |
 ### Update ve kütüphane kurulumu
 ```
 sudo apt update
